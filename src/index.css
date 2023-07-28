@@ -1,13 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    background-color: #818181;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.calculator-grid {
+    grid-template-columns: repeat(4, 6rem);
+    grid-template-rows: minmax(7rem, auto) repeat(5, 6rem);
+    @apply grid mt-8 justify-center
+}
+
+.calculator-grid > button {
+    @apply text-3xl border-2 bg-white hover:bg-opacity-90
+}
+
+.span-two {
+    @apply col-span-2
+}
+
+.output {
+    grid-column: 1 / -1;
+    background-color: rgba(0, 0, 0, .75);
+    @apply flex flex-col items-end justify-around p-3 break-words
+}
+
+.previous-operand {
+    color: rgba(255, 255, 255, .75);
+    @apply text-2xl
+}
+
+.current-operand {
+    color: rgba(255, 255, 255);
+    @apply text-5xl
 }
