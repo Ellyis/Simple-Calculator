@@ -44,6 +44,7 @@ function reducer(state, { type, payload }) {
         return {
           ...state,
           currentOperand: null,
+          isNegative: false,
         }
       }
       return {
