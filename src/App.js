@@ -7,7 +7,7 @@ export const ACTION = {
   DELETE_DIGIT: 'delete-digit',
   CLEAR: 'clear',
   CHOOSE_OPERATION: 'choose-operation',
-  EVALUATE: 'evaluate'
+  EVALUATE: 'evaluate',
 }
 
 function reducer(state, { type, payload }) {
@@ -17,7 +17,7 @@ function reducer(state, { type, payload }) {
         return {
           ...state,
           currentOperand: payload.digit,
-          overwrite: false
+          overwrite: false,
         }
       }
       if (payload.digit === "0" && state.currentOperand === "0") {
@@ -35,7 +35,7 @@ function reducer(state, { type, payload }) {
         return {
           ...state,
           currentOperand: null,
-          overwrite: false
+          overwrite: false,
         }
       }
       if (state.currentOperand == null)
@@ -43,7 +43,7 @@ function reducer(state, { type, payload }) {
       if (state.currentOperand.length === 1) {
         return {
           ...state,
-          currentOperand: null
+          currentOperand: null,
         }
       }
       return {
@@ -54,27 +54,36 @@ function reducer(state, { type, payload }) {
       return {}
     case ACTION.CHOOSE_OPERATION:
       if (state.currentOperand == null && state.previousOperand == null) {
+        if (payload.operation === "-") {
+          return {
+            ...state,
+            isNegative: true,
+          }
+        }
         return state
       }
       if (state.currentOperand == null) {
         return {
           ...state,
-          operation: payload.operation
+          operation: payload.operation,
+          // isNegative: false,
         }
       }
       if (state.previousOperand == null) {
         return {
           ...state,
           operation: payload.operation,
-          previousOperand: state.currentOperand,
-          currentOperand: null
+          previousOperand: state.isNegative ? convertNegative(state.currentOperand) : state.currentOperand,
+          currentOperand: null,
+          isNegative: false,
         }
       }
       return {
         ...state,
         operation: payload.operation,
         previousOperand: evaluate(state),
-        currentOperand: null
+        currentOperand: null,
+        isNegative: false,
       }
     case ACTION.EVALUATE:
       if (state.operation == null || state.previousOperand == null || state.currentOperand == null) {
@@ -85,10 +94,17 @@ function reducer(state, { type, payload }) {
         operation: null,
         previousOperand: null,
         currentOperand: evaluate(state),
-        overwrite: true
+        overwrite: true,
       }
     default: return state
   }
+}
+
+const convertNegative = (currentOperand) => {
+  const current = parseFloat(currentOperand);
+  const converted = current * -1;
+
+  return converted.toString();
 }
 
 const evaluate = ({ currentOperand, previousOperand, operation }) => {
@@ -132,15 +148,16 @@ const formatOperand = (operand) => {
 }
 
 function App() {
-  const [{ currentOperand, previousOperand, operation }, dispatch] = useReducer(reducer, {
+  const [{ currentOperand, previousOperand, operation, isNegative }, dispatch] = useReducer(reducer, {
     currentOperand: null,
+    isNegative: false,
   })
 
   return (
     <div className="calculator-grid">
       <div className="output">
         <div className="previous-operand">{formatOperand(previousOperand)} {operation}</div>
-        <div className="current-operand">{formatOperand(currentOperand)}</div>
+        <div className="current-operand"> {isNegative ? '-' : ''}{formatOperand(currentOperand)}</div>
       </div>
       <button className="span-two" onClick={() => dispatch({ type: ACTION.CLEAR})}>AC</button>
       <button onClick={() => dispatch({ type: ACTION.DELETE_DIGIT})}>DEL</button>
